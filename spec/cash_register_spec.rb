@@ -1,15 +1,21 @@
+require 'pry'
+
 describe 'CashRegister' do
   let(:cash_register) { CashRegister.new }
   let(:cash_register_with_discount) { CashRegister.new(20) }
+  # cash_register = CashRegister.new (discount == 0)
+  # cash_register_with_discount = CashRegister.new(20) (discount == 20)
 
   describe '::new' do
     it 'sets an instance variable @total on initialization to zero' do
       expect(cash_register.instance_variable_get(:@total)).to eq(0)
+      # cash_register.total == 0
     end
 
     it 'optionally takes an employee discount on initialization' do
       expect(cash_register_with_discount.discount).to eq(20)
     end
+    
   end
 
   describe '#total' do
@@ -67,9 +73,16 @@ describe 'CashRegister' do
 
   describe '#items' do
     it 'returns an array containing all items that have been added' do
-      new_register = CashRegister.new
+      new_register = CashRegister.new #register doesn't have a discount
+      
       new_register.add_item("eggs", 1.99)
+      # new_register.items => ["eggs"]
+      
       new_register.add_item("tomato", 1.76, 3)
+      # new_register.items => ["tomato", "tomato", "tomato"]
+
+      # guess (hypothesis): items attribute is being reset somewhere
+      
       expect(new_register.items).to eq(["eggs", "tomato", "tomato", "tomato"])
     end
   end
@@ -83,8 +96,10 @@ describe 'CashRegister' do
     end
 
     it 'returns the total to 0.0 if all items have been removed' do
+
       cash_register.add_item("tomato", 1.76, 2)
-      expect{cash_register.void_last_transaction}.to change{cash_register.total}.from(3.52).to(0.0)
+      # added two tomatoes to items array, adding tomatoes_total to @total (3.52)
+      expect{cash_register.void_last_transaction}.to change{cash_register.total}.from(3.52).to(0.0) #1.76
     end
   end
 end
